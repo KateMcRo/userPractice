@@ -1,23 +1,31 @@
 const router = require("express").Router();
 const User = require("../../models/User");
+const jwt = require("jsonwebtoken");
+
+require("dotenv").config();
 
 router.get("/", (req, res) => {
   res.send("Hello User");
 });
 
+// Create a new User
 router.post("/create", async (req, res) => {
-  const data = await User.create({
+  const newUser = await User.create({
     firstName: req.body.firstName,
     email: req.body.email,
     password: req.body.password,
   });
 
-  const newUser = {
-    firstName: data.firstName,
-    email: data.email,
+  const data = {
+    firstName: newUser.firstName,
+    email: newUser.email,
   };
 
-  res.json({ newUser });
+  const token = await jwt.sign({ data }, process.env.JWT_SECRET, {
+    expiresIn: "2h",
+  });
+  console.log({ data, token });
+  res.json({ data, token });
 });
 
 module.exports = router;
