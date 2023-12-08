@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useAppState } from "../providers/AppStateProvider";
 
 export default function SignUp() {
   // Consts
@@ -10,9 +11,10 @@ export default function SignUp() {
 
   const [error, setError] = useState("");
 
+  const [, dispatch] = useAppState();
   // created at regexr.com
   const nameRegex = /\b([A-ZÀ-ÿa-z][a-z]*)+/;
-  const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+  const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
   const passRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{6,}$/;
 
   // Logic
@@ -61,6 +63,19 @@ export default function SignUp() {
       }
       const { data, token } = await response.json();
       console.log({ data, token });
+      if (token) {
+        localStorage.setItem("authToken", JSON.stringify(token));
+        dispatch({
+          type: "SET_USER",
+          payload: {
+            id: data.id,
+            firstName: data.firstName,
+            email: data.email,
+            loggedIn: data.loggedIn,
+          },
+        });
+        // We will need to navigate to somewhere else using the router dom
+      }
     } catch (error) {
       console.error("Fetch error:", error);
     }
