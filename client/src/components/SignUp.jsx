@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppState } from "../providers/AppStateProvider";
 
+import { nameRegex, emailRegex, passRegex } from "../utils/regex";
+
 export default function SignUp() {
   // Consts
-
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,11 +16,6 @@ export default function SignUp() {
   const [, dispatch] = useAppState();
 
   const navigate = useNavigate();
-
-  // created at regexr.com
-  const nameRegex = /\b([A-ZÀ-ÿa-z][a-z]*)+/;
-  const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
-  const passRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{6,}$/;
 
   // Logic
   const validateName = (firstName) => {
@@ -84,6 +80,11 @@ export default function SignUp() {
     }
   }
 
+  function handleLogin(e) {
+    e.preventDefault();
+    navigate("/login");
+  }
+
   // Html
   return (
     <div id="create_form">
@@ -140,6 +141,9 @@ export default function SignUp() {
         {error && <div style={{ color: "red" }}>{error}</div>}
         <button id="submit" onClick={(e) => handleSignUp(e)}>
           Submit
+        </button>
+        <button id="login" onClick={(e) => handleLogin(e)}>
+          Login Instead
         </button>
       </form>
     </div>
