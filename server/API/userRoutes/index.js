@@ -1,12 +1,9 @@
 const router = require("express").Router();
 const User = require("../../models/User");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 require("dotenv").config();
-
-router.get("/", (req, res) => {
-  res.send("Hello User");
-});
 
 // Create a New User
 router.post("/create", async (req, res) => {
@@ -43,5 +40,39 @@ router.post("/validate", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+// Log a User In
+try {
+  router.post("/login", async (req, res) => {
+    //find user by email
+    const user = await User.findOne({ email: req.body.email });
+    //if none exist, error
+    if (!user) {
+      return res.json({ message: "You lost bro?" });
+    }
+
+    //if exists, validate password
+    const validPass = await bcrypt.compare(req.body.password, user.password);
+    //if pass wrong, error
+    if (!validPass) {
+      return res.json({ message: "Nice try, buddy." });
+    }
+    // if valid, create data objext
+    const data = {
+      id: user.id,
+      firstName: user.firstName,
+      email: user.email,
+    };
+    // sign token
+    const token = jwt.sign({ data }, process.env.JWT_SECRET, {
+      expiresIn: "2h",
+    });
+    // send resonse
+    res.json({ data, token });
+  });
+} catch (error) {
+  console.error(error);
+  res.json({ error: error.message });
+}
 
 module.exports = router;

@@ -8,8 +8,11 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [, dispatch] = useAppState();
+
   const [error, setError] = useState("");
 
+  const navigate = useNavigate();
   // Logic
   const validEmail = (email) => {
     if (!emailRegex.test(email)) {
@@ -25,7 +28,43 @@ export default function Login() {
 
   async function handleLogin(e) {
     e.preventDefault();
-    console.log("click");
+
+    const formObj = {
+      email: email,
+      password: password,
+    };
+
+    try {
+      const response = await fetch("http://localhost:3001/user/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formObj),
+      });
+      const { data, token } = await response.json();
+      console.log({ data, token });
+      // check for token
+      if (token) {
+        // set token in local storage
+        localStorage.setItem("authToken", JSON.stringify(token));
+        // dispatch SET_USER
+        dispatch({
+          type: "SET_USER",
+          payload: {
+            id: data.id,
+            firstName: data.firstName,
+            email: data.email,
+            loggedIn: true,
+          },
+        });
+        // redirect to dashboard
+        navigate("/dashboard");
+      }
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.error}`);
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+    }
   }
 
   // Html
