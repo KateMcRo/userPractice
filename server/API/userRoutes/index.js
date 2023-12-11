@@ -17,6 +17,7 @@ router.post("/create", async (req, res) => {
   });
 
   const data = {
+    id: newUser._id,
     firstName: newUser.firstName,
     email: newUser.email,
   };

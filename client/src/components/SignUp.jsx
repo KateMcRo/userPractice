@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppState } from "../providers/AppStateProvider";
 
 export default function SignUp() {
@@ -12,6 +13,9 @@ export default function SignUp() {
   const [error, setError] = useState("");
 
   const [, dispatch] = useAppState();
+
+  const navigate = useNavigate();
+
   // created at regexr.com
   const nameRegex = /\b([A-ZÀ-ÿa-z][a-z]*)+/;
   const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
@@ -33,7 +37,6 @@ export default function SignUp() {
   };
 
   const validatePass = (password, confirmPass) => {
-    console.log(password, confirmPass);
     if (!passRegex.test(password)) {
       return `Passwords must contain at least 6 characters and 1 of each: uppercase, lowercase, number.`;
     }
@@ -71,10 +74,10 @@ export default function SignUp() {
             id: data.id,
             firstName: data.firstName,
             email: data.email,
-            loggedIn: data.loggedIn,
+            loggedIn: true,
           },
         });
-        // We will need to navigate to somewhere else using the router dom
+        navigate("/dashboard");
       }
     } catch (error) {
       console.error("Fetch error:", error);
