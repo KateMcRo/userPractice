@@ -75,4 +75,10 @@ try {
   res.json({ error: error.message });
 }
 
+// Log Out
+router.post("/logout", async (req, res) => {
+  res.clearCookie("jwt");
+  res.status(200).json({ message: `💩🗑️` });
+});
+
 module.exports = router;

@@ -21,8 +21,11 @@ const appStateReducer = (state, action) => {
         loggedIn: action.payload.loggedIn,
       };
     }
+    case "SET_LOGGED_OUT": {
+      return initialState;
+    }
     default:
-      return state;
+      return initialState;
   }
 };
 
